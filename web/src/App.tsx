@@ -1,9 +1,7 @@
+import { ReviewsPage } from "@/pages/ReviewsPage";
+
 function App() {
-  return (
-    <main className="flex min-h-svh items-center justify-center">
-      <h1 className="text-2xl font-semibold">reviews-viewer</h1>
-    </main>
-  );
+  return <ReviewsPage />;
 }
 
 export default App;
