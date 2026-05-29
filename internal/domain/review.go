@@ -14,7 +14,9 @@ type Review struct {
 	SubmittedAt time.Time `json:"submittedAt"`
 }
 
-// WithinLast reports whether the review was submitted within d of the current time.
+// WithinLast reports whether the review was submitted within the last d — that
+// is, between now-d and now. Future-dated reviews are excluded.
 func (r Review) WithinLast(d time.Duration) bool {
-	return time.Since(r.SubmittedAt) <= d
+	age := time.Since(r.SubmittedAt)
+	return age >= 0 && age <= d
 }

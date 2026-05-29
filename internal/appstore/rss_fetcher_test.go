@@ -35,6 +35,8 @@ func TestParsePage(t *testing.T) {
 		{"empty entry array", []byte(`{"feed":{"entry":[]}}`), 0, false},
 		{"entry null", []byte(`{"feed":{"entry":null}}`), 0, false},
 		{"malformed rating", []byte(`{"feed":{"entry":[{"id":{"label":"1"},"im:rating":{"label":"five"},"updated":{"label":"2026-05-01T00:00:00-07:00"}}]}}`), 0, true},
+		{"rating below range", []byte(`{"feed":{"entry":[{"id":{"label":"1"},"im:rating":{"label":"0"},"updated":{"label":"2026-05-01T00:00:00-07:00"}}]}}`), 0, true},
+		{"rating above range", []byte(`{"feed":{"entry":[{"id":{"label":"1"},"im:rating":{"label":"6"},"updated":{"label":"2026-05-01T00:00:00-07:00"}}]}}`), 0, true},
 		{"malformed updated", []byte(`{"feed":{"entry":[{"id":{"label":"1"},"im:rating":{"label":"5"},"updated":{"label":"not-a-time"}}]}}`), 0, true},
 		{"invalid json", []byte(`{not json`), 0, true},
 	}

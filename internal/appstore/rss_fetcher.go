@@ -129,6 +129,9 @@ func toReview(e rssEntry, appID string) (domain.Review, error) {
 	if err != nil {
 		return domain.Review{}, fmt.Errorf("review %s: bad rating %q: %w", e.ID.Label, e.Rating.Label, err)
 	}
+	if score < 1 || score > 5 {
+		return domain.Review{}, fmt.Errorf("review %s: rating %d out of range 1-5", e.ID.Label, score)
+	}
 	submitted, err := time.Parse(time.RFC3339, e.Updated.Label)
 	if err != nil {
 		return domain.Review{}, fmt.Errorf("review %s: bad updated %q: %w", e.ID.Label, e.Updated.Label, err)
