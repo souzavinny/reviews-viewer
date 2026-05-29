@@ -199,6 +199,33 @@ func TestCORS(t *testing.T) {
 	}
 }
 
+func TestDocsEndpoints(t *testing.T) {
+	h, _ := newTestHandler(t, &fakeFetcher{}, nil)
+
+	spec := do(h, http.MethodGet, "/openapi.yaml", "")
+	if spec.Code != http.StatusOK {
+		t.Fatalf("/openapi.yaml status = %d", spec.Code)
+	}
+	if ct := spec.Header().Get("Content-Type"); ct != "application/yaml" {
+		t.Errorf("/openapi.yaml content-type = %q", ct)
+	}
+	if !strings.HasPrefix(spec.Body.String(), "openapi: 3.1") {
+		t.Errorf("/openapi.yaml does not start with the OpenAPI version")
+	}
+
+	if redir := do(h, http.MethodGet, "/docs", ""); redir.Code != http.StatusMovedPermanently {
+		t.Fatalf("/docs status = %d, want 301", redir.Code)
+	}
+
+	ui := do(h, http.MethodGet, "/docs/", "")
+	if ui.Code != http.StatusOK {
+		t.Fatalf("/docs/ status = %d", ui.Code)
+	}
+	if !strings.Contains(ui.Body.String(), "swagger-ui") {
+		t.Errorf("/docs/ does not look like the Swagger UI page")
+	}
+}
+
 func TestHealthz(t *testing.T) {
 	h, _ := newTestHandler(t, &fakeFetcher{}, nil)
 	rec := do(h, http.MethodGet, "/healthz", "")

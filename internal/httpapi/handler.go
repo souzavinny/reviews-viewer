@@ -48,6 +48,7 @@ func New(svc *service.Service, cfg Config) http.Handler {
 	mux.HandleFunc("DELETE /apps/{appID}", h.removeApp)
 	mux.HandleFunc("GET /apps/{appID}/reviews", h.getReviews)
 	mux.HandleFunc("GET /apps/{appID}/summary", h.getSummary)
+	mountDocs(mux)
 	return h.withCORS(mux)
 }
 

@@ -1,0 +1,255 @@
+openapi: 3.1.0
+info:
+  title: reviews-api
+  version: 1.0.0
+  description: >
+    Serves recent iOS App Store customer reviews for a set of monitored apps.
+    The backend polls the iTunes customer-reviews feed, stores reviews per app,
+    and exposes them windowed and newest-first. Apps can be added/removed at
+    runtime; the set and the reviews survive restart.
+servers:
+  - url: /
+    description: Same origin as this documentation page.
+
+paths:
+  /healthz:
+    get:
+      summary: Liveness check
+      operationId: health
+      responses:
+        "200":
+          description: The server is up.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    examples: ["ok"]
+
+  /apps:
+    get:
+      summary: List monitored apps
+      operationId: listApps
+      responses:
+        "200":
+          description: The monitored apps, sorted by id.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/App"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    post:
+      summary: Add an app to monitor
+      description: >
+        Validates the id against the live App Store feed before accepting it,
+        then registers it and triggers an initial poll in the background.
+      operationId: addApp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddAppRequest"
+      responses:
+        "201":
+          description: The app was registered.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/App"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          description: No App Store app with that id (no reachable feed).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /apps/{appID}:
+    delete:
+      summary: Stop monitoring an app
+      description: Idempotent — removing an unmonitored app also returns 204.
+      operationId: removeApp
+      parameters:
+        - $ref: "#/components/parameters/AppID"
+      responses:
+        "204":
+          description: The app is no longer monitored.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /apps/{appID}/reviews:
+    get:
+      summary: Recent reviews for an app
+      description: Reviews within the window, newest first. Unknown apps return an empty array.
+      operationId: getReviews
+      parameters:
+        - $ref: "#/components/parameters/AppID"
+        - $ref: "#/components/parameters/Hours"
+      responses:
+        "200":
+          description: Reviews within the window, newest first.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /apps/{appID}/summary:
+    get:
+      summary: Aggregate stats for an app
+      description: Total, average score, count per star, and last-updated — over the same window as the reviews list.
+      operationId: getSummary
+      parameters:
+        - $ref: "#/components/parameters/AppID"
+        - $ref: "#/components/parameters/Hours"
+      responses:
+        "200":
+          description: Aggregated stats for the window.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Summary"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+components:
+  parameters:
+    AppID:
+      name: appID
+      in: path
+      required: true
+      description: Numeric iTunes app id.
+      schema:
+        type: string
+        pattern: "^[0-9]+$"
+      examples:
+        instagram:
+          value: "389801252"
+    Hours:
+      name: hours
+      in: query
+      required: false
+      description: Look-back window in hours. Clamped to [1, 2160] (90 days); defaults to 48.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 2160
+        default: 48
+
+  responses:
+    BadRequest:
+      description: Malformed request (e.g. a non-numeric id or invalid body).
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    InternalError:
+      description: Unexpected server error.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Review:
+      type: object
+      description: A single customer review, normalized from the feed.
+      required: [id, appId, author, content, score, submittedAt]
+      properties:
+        id:
+          type: string
+          description: Stable review id (the feed's entry id).
+        appId:
+          type: string
+        author:
+          type: string
+        content:
+          type: string
+        score:
+          type: integer
+          minimum: 1
+          maximum: 5
+        submittedAt:
+          type: string
+          format: date-time
+          description: Submission time (RFC 3339).
+      examples:
+        - id: "14115629180"
+          appId: "389801252"
+          author: "SuoQin16"
+          content: "I really need to edit music"
+          score: 4
+          submittedAt: "2026-05-28T06:25:43-07:00"
+
+    App:
+      type: object
+      description: A monitored app.
+      required: [id]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          description: Optional display name.
+
+    Summary:
+      type: object
+      description: Aggregate stats over the windowed reviews.
+      required: [total, average, countByStar, lastUpdated]
+      properties:
+        total:
+          type: integer
+          description: Number of reviews in the window.
+        average:
+          type: number
+          description: Mean score over the window (0 when empty).
+        countByStar:
+          type: object
+          description: Count of reviews per star; keys are "1" through "5".
+          additionalProperties:
+            type: integer
+        lastUpdated:
+          type: string
+          format: date-time
+          description: Most recent submission time in the window; the zero time when empty.
+      examples:
+        - total: 500
+          average: 2.72
+          countByStar: { "1": 240, "2": 38, "3": 23, "4": 20, "5": 179 }
+          lastUpdated: "2026-05-28T06:25:43-07:00"
+
+    AddAppRequest:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+          pattern: "^[0-9]+$"
+          description: Numeric iTunes app id to add.
+      examples:
+        - id: "389801252"
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
