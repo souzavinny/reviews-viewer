@@ -105,11 +105,10 @@ func TestGetRecentReviewsPropagatesStoreError(t *testing.T) {
 	}
 }
 
-func TestAddAppValidatesRegistersAndPolls(t *testing.T) {
-	store := newFakeStore()
-	fetcher := &fakeFetcher{exists: true, fetchResults: [][]domain.Review{{rev("a", 5, time.Hour)}}}
+func TestAddAppValidatesAndRegisters(t *testing.T) {
+	fetcher := &fakeFetcher{exists: true}
 	reg := newFakeRegistry()
-	svc := service.New(store, fetcher, reg)
+	svc := service.New(newFakeStore(), fetcher, reg)
 
 	app, err := svc.AddApp(context.Background(), "123")
 	if err != nil {
@@ -123,9 +122,6 @@ func TestAddAppValidatesRegistersAndPolls(t *testing.T) {
 	}
 	if _, ok := reg.apps["123"]; !ok {
 		t.Fatal("app was not registered")
-	}
-	if len(store.reviews["123"]) != 1 {
-		t.Fatal("immediate poll did not store the fetched review")
 	}
 }
 
@@ -166,26 +162,6 @@ func TestAddAppPropagatesRegistryAddError(t *testing.T) {
 
 	if _, err := svc.AddApp(context.Background(), "123"); err == nil {
 		t.Fatal("want error when the registry add fails")
-	}
-	if len(store.reviews["123"]) != 0 {
-		t.Fatal("must not poll/store when registration fails")
-	}
-}
-
-func TestAddAppRegistersDespiteInitialPollFailure(t *testing.T) {
-	reg := newFakeRegistry()
-	fetcher := &fakeFetcher{exists: true, fetchErr: errors.New("poll failed")}
-	svc := service.New(newFakeStore(), fetcher, reg)
-
-	app, err := svc.AddApp(context.Background(), "123")
-	if err != nil {
-		t.Fatalf("add should succeed despite a failed initial poll: %v", err)
-	}
-	if app.ID != "123" {
-		t.Fatalf("returned app id %q, want 123", app.ID)
-	}
-	if _, ok := reg.apps["123"]; !ok {
-		t.Fatal("app should remain registered after a failed initial poll")
 	}
 }
 

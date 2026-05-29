@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"sort"
 	"time"
 
@@ -54,9 +53,10 @@ func (s *Service) GetRecentReviews(ctx context.Context, appID string, window tim
 	return recent, nil
 }
 
-// AddApp validates the app id against the live feed, registers it, and triggers
-// an initial poll. A failed initial poll is logged, not fatal: the app stays
-// registered and the scheduler polls it on the next tick.
+// AddApp validates the app id against the live feed and registers it. The
+// initial poll is the caller's concern — the HTTP layer triggers it in the
+// background and the scheduler polls on each tick — so registration isn't
+// blocked on a feed round-trip.
 func (s *Service) AddApp(ctx context.Context, appID string) (domain.App, error) {
 	exists, err := s.fetcher.Exists(ctx, appID)
 	if err != nil {
@@ -69,9 +69,6 @@ func (s *Service) AddApp(ctx context.Context, appID string) (domain.App, error) 
 	app := domain.App{ID: appID}
 	if err := s.registry.Add(ctx, app); err != nil {
 		return domain.App{}, fmt.Errorf("add app %s: %w", appID, err)
-	}
-	if err := s.PollApp(ctx, appID); err != nil {
-		log.Printf("service: initial poll of app %s failed (registered; will retry on schedule): %v", appID, err)
 	}
 	return app, nil
 }
