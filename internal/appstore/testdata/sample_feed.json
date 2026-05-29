@@ -1,0 +1,170 @@
+{
+  "feed": {
+    "author": {
+      "name": {
+        "label": "iTunes Store"
+      },
+      "uri": {
+        "label": "http://www.apple.com/itunes/"
+      }
+    },
+    "title": {
+      "label": "iTunes Store: Customer Reviews"
+    },
+    "updated": {
+      "label": "2026-05-29T08:39:20-07:00"
+    },
+    "entry": [
+      {
+        "author": {
+          "uri": {
+            "label": "https://itunes.apple.com/us/reviews/id1199100890"
+          },
+          "name": {
+            "label": "SuoQin16"
+          },
+          "label": ""
+        },
+        "updated": {
+          "label": "2026-05-28T06:25:43-07:00"
+        },
+        "im:rating": {
+          "label": "4"
+        },
+        "im:version": {
+          "label": "431.0.0"
+        },
+        "id": {
+          "label": "14115629180"
+        },
+        "title": {
+          "label": "I really need to edit music"
+        },
+        "content": {
+          "label": "I don’t get why the music on post cannot be changed. Please make it changeable.",
+          "attributes": {
+            "type": "text"
+          }
+        },
+        "link": {
+          "attributes": {
+            "rel": "related",
+            "href": "https://itunes.apple.com/us/review?id=389801252&type=Purple%20Software"
+          }
+        },
+        "im:voteSum": {
+          "label": "0"
+        },
+        "im:contentType": {
+          "attributes": {
+            "term": "Application",
+            "label": "Application"
+          }
+        },
+        "im:voteCount": {
+          "label": "0"
+        }
+      },
+      {
+        "author": {
+          "uri": {
+            "label": "https://itunes.apple.com/us/reviews/id1664508362"
+          },
+          "name": {
+            "label": "Boomshivakishan"
+          },
+          "label": ""
+        },
+        "updated": {
+          "label": "2026-05-28T06:12:30-07:00"
+        },
+        "im:rating": {
+          "label": "5"
+        },
+        "im:version": {
+          "label": "431.0.0"
+        },
+        "id": {
+          "label": "14115585288"
+        },
+        "title": {
+          "label": "my insta Account suspend"
+        },
+        "content": {
+          "label": "Hello Instagram Support Team, My name is (Tapan biswal), and I am requesting a review of my suspended Instagram account.\nMy Instagram username is @boomshivakishan. My account was suspended on 2026-05-27, and I believe this may have happened by mistake.\n\nThe account has approximately\n31.4K followers and is important for my online presence and communication. I’ve always made it a priority to follow Instagram’s guidelines and have never knowingly violated any policies.\nI have attached the suspension screenshot for your reference.\nI kindly request your team to manually review my account and restore access as quickly as possible.\nThank you for your time and support.\nRegards,\nWhat do you think...",
+          "attributes": {
+            "type": "text"
+          }
+        },
+        "link": {
+          "attributes": {
+            "rel": "related",
+            "href": "https://itunes.apple.com/us/review?id=389801252&type=Purple%20Software"
+          }
+        },
+        "im:voteSum": {
+          "label": "0"
+        },
+        "im:contentType": {
+          "attributes": {
+            "term": "Application",
+            "label": "Application"
+          }
+        },
+        "im:voteCount": {
+          "label": "0"
+        }
+      },
+      {
+        "author": {
+          "uri": {
+            "label": "https://itunes.apple.com/us/reviews/id873979689"
+          },
+          "name": {
+            "label": "avalane1223"
+          },
+          "label": ""
+        },
+        "updated": {
+          "label": "2026-05-28T06:06:14-07:00"
+        },
+        "im:rating": {
+          "label": "1"
+        },
+        "im:version": {
+          "label": "431.0.0"
+        },
+        "id": {
+          "label": "14115564793"
+        },
+        "title": {
+          "label": "blah"
+        },
+        "content": {
+          "label": "stop banning me unreasonably",
+          "attributes": {
+            "type": "text"
+          }
+        },
+        "link": {
+          "attributes": {
+            "rel": "related",
+            "href": "https://itunes.apple.com/us/review?id=389801252&type=Purple%20Software"
+          }
+        },
+        "im:voteSum": {
+          "label": "0"
+        },
+        "im:contentType": {
+          "attributes": {
+            "term": "Application",
+            "label": "Application"
+          }
+        },
+        "im:voteCount": {
+          "label": "0"
+        }
+      }
+    ]
+  }
+}
