@@ -6,6 +6,12 @@
 ![Bun](https://img.shields.io/badge/runtime-Bun-f7f8f5?logo=bun&logoColor=black)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+
+
+https://github.com/user-attachments/assets/913bee62-26b1-4b26-885c-7357aff6a1b8
+
+
+
 A Go service that polls Apple's iTunes customer-reviews feed for any number of iOS apps,
 stores what it finds, and serves recent reviews over HTTP — plus a React app that displays
 them: the last 48 hours by default, newest first, with content, author, score, and submission
