@@ -15,6 +15,11 @@ import { errorMessage } from "@/lib/errors";
 
 const DEFAULT_HOURS = 48;
 const PAGE_SIZE = 20;
+const WIDEST_WINDOW_HOURS = 168; // mirrors the widest option in WindowSelector
+
+function windowLabel(hours: number): string {
+  return hours === WIDEST_WINDOW_HOURS ? "7 days" : `${hours} hours`;
+}
 
 export function ReviewsPage() {
   const {
@@ -87,7 +92,16 @@ export function ReviewsPage() {
   } else if (reviewsError && reviews.length === 0) {
     body = <ErrorState message={reviewsError} />;
   } else if (reviews.length === 0) {
-    body = <EmptyState message="No reviews in this window." />;
+    body = (
+      <EmptyState
+        message={`No reviews in the last ${windowLabel(hours)}.`}
+        hint={
+          hours < WIDEST_WINDOW_HOURS
+            ? "The App Store feed usually lags about a day, so the newest reviews are often 24–48h old. Try a wider window."
+            : undefined
+        }
+      />
+    );
   } else {
     body = (
       <div className="space-y-4">

@@ -10,10 +10,17 @@ export function LoadingState() {
   );
 }
 
-export function EmptyState({ message }: { message: string }) {
+export function EmptyState({
+  message,
+  hint,
+}: {
+  message: string;
+  hint?: string;
+}) {
   return (
     <div className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">
       {message}
+      {hint && <p className="mt-2 text-xs text-muted-foreground/70">{hint}</p>}
     </div>
   );
 }
