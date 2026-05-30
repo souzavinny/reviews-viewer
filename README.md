@@ -139,6 +139,33 @@ interfaces it depends on. `cmd/server/main.go` shows how the concrete edges are 
 
 ## How It Works
 
+```mermaid
+flowchart TD
+    Client[React client]
+
+    subgraph Apple["iTunes (Apple)"]
+        Feed["Reviews feed /json"]
+        Lookup["Lookup API"]
+    end
+
+    API["HTTP API + service"]
+    Sched["Scheduler<br/>every POLL_INTERVAL"]
+    Store[("Review store<br/>file per app")]
+    Reg[("Registry<br/>apps.json")]
+
+    Client -- "GET reviews / summary" --> API
+    Client -- "POST /apps" --> API
+
+    API -- "read, apply window" --> Store
+    API -- "validate + name/icon" --> Lookup
+    API -- "save app" --> Reg
+    API -- "trigger immediate poll" --> Sched
+
+    Reg -- "which apps to poll" --> Sched
+    Sched -- "poll each app" --> Feed
+    Feed -- "parsed reviews" --> Store
+```
+
 1. On boot, the service loads stored reviews and the app registry from `DATA_DIR`, seeding any
    ids from `APP_IDS`.
 2. A scheduler ticks every `POLL_INTERVAL`, fanning out across all tracked apps with bounded
